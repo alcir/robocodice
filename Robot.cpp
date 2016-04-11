@@ -29,16 +29,15 @@ Robot::~Robot(){/*nothing to destruct*/}
 int Robot::guarda() {
 
   if (millis() >= this->pingTimer) {   // pingSpeed milliseconds since last ping, do another ping.
-    pingTimer += pingSpeed;      // Set the next ping time.
+    pingTimer += pingSpeed;             // Set the next ping time.
 
 	 _distanza=sonar.ping_cm();
-    //Serial.print("ooooo ");
-    //Serial.println(distanza);
+
 	 return _distanza;
 
   }
 
-   return 100;
+   return 100;  // si assume che la distanza cercata non sia superiore a un metro
 
 }
 
@@ -56,21 +55,28 @@ void Robot::anima(void) {
 
   this->reset();
  
-  pinMode(13, OUTPUT);
-  pinMode(A4, OUTPUT);
-  pinMode(A3, OUTPUT);
-  pinMode(A2, OUTPUT);
-  pinMode(A1, OUTPUT);
+  pinMode(13, OUTPUT); // led alto
+  pinMode(A4, OUTPUT); // led retromarcia
+  // pinMode(A3, OUTPUT); 
+  pinMode(A2, OUTPUT); // led sinistro
+  pinMode(A1, OUTPUT); // led destro
+
   pinMode(pinFinecorsa, INPUT);
+
 }
 
-void Robot::vai_avanti(void) {
+void Robot::vai_avanti() {
+	vai_avanti(this->steps);
+}
 
-  //digitalWrite(A3, HIGH); 
+void Robot::vai_avanti(unsigned int passi) {
 
   this->reset();
 
-  endPoint = this->steps;
+  endPoint = passi;
+   
+  //Serial.println("Avantii");
+  //Serial.println(endPoint);
 
   stepper1.setSpeed(1000);
   stepper2.setSpeed(1000);
@@ -89,13 +95,9 @@ void Robot::vai_avanti(void) {
   stepper1.setCurrentPosition(0);
   stepper2.setCurrentPosition(0);
 
-  digitalWrite(A3, LOW); 
-
 }
 
 void Robot::avanti_tutta(void) {
-
-  //digitalWrite(A3, HIGH); 
 
   this->reset();
   stepper1.setSpeed(1000);
@@ -103,28 +105,42 @@ void Robot::avanti_tutta(void) {
 
   stepper1.runSpeed();
   stepper2.runSpeed();
-
-  digitalWrite(A3, LOW); 
   
 }
 
-void Robot::vai_indietro(void) {
+void Robot::vai_indietro() {
+
+	vai_indietro(this->steps/2);
+
+}
+
+void Robot::vai_indietro(unsigned int passi) {
 
   digitalWrite(A4, HIGH);
- 
-  endPoint = this->steps;
+
   stepper1.setCurrentPosition(0);
   stepper2.setCurrentPosition(0);
+ 
+  endPoint = passi;
 
   stepper1.setSpeed(2000);
   stepper2.setSpeed(2000);
   
+  // stepper1.moveTo(-endPoint/2);  
+  // stepper2.moveTo(+endPoint/2);
+
   stepper1.moveTo(-endPoint);  
   stepper2.moveTo(+endPoint);
-  
+ 
   while (stepper1.distanceToGo() != 0) {
-    stepper1.run();
-    stepper2.run();
+    // stepper1.run();
+    // stepper2.run();
+    
+    stepper1.setSpeed(1000);
+    stepper2.setSpeed(1000);
+      
+    stepper1.runSpeedToPosition();
+    stepper2.runSpeedToPosition();
   }
 
   stepper1.setCurrentPosition(0);
@@ -134,8 +150,13 @@ void Robot::vai_indietro(void) {
 
 }
 
+void Robot::girati_verso_sinistra() {
 
-void Robot::girati_verso_sinistra(void) {
+	girati_verso_sinistra(this->steps/2);
+
+}
+
+void Robot::girati_verso_sinistra(unsigned int passi) {
 
   digitalWrite(A2, HIGH); 
   
@@ -144,7 +165,10 @@ void Robot::girati_verso_sinistra(void) {
   stepper1.setCurrentPosition(0);
   stepper2.setCurrentPosition(0);
 
-  endPoint = 2400;
+  endPoint = passi;
+
+  Serial.println("sin ");
+  Serial.println(endPoint);
 
   stepper1.setSpeed(2000);
   stepper2.setSpeed(2000);
@@ -164,7 +188,13 @@ void Robot::girati_verso_sinistra(void) {
   
 }
 
-void Robot::girati_verso_destra(void) {
+void Robot::girati_verso_destra() {
+
+	girati_verso_destra(this->steps/2);
+
+}
+
+void Robot::girati_verso_destra(unsigned int passi) {
 
   digitalWrite(A1, HIGH); 
   
@@ -173,7 +203,7 @@ void Robot::girati_verso_destra(void) {
   stepper1.setCurrentPosition(0);
   stepper2.setCurrentPosition(0);
 
-  endPoint = 2400;
+  endPoint = passi;
 
   stepper1.setSpeed(1000);
   stepper2.setSpeed(1000);
@@ -195,7 +225,6 @@ void Robot::girati_verso_destra(void) {
 
 void Robot::fine_lavoro(void) {
 
-
   stepper1.stop();
   stepper2.stop();
 
@@ -209,6 +238,18 @@ void Robot::fine_lavoro(void) {
     delay(200);
   }
 
+}
+
+void Robot::attendi(void) {
+ // Serial.println("attendo");
+  stepper1.stop();
+  stepper2.stop();
+  stepper1.disableOutputs();
+  stepper2.disableOutputs();
+  digitalWrite(13, HIGH);
+  delay(200);
+  digitalWrite(13, LOW);
+  delay(200);
 }
 
 bool Robot::sensore_fine_corsa() {
