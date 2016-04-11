@@ -10,16 +10,20 @@ public:
    Robot(AccelStepper stepperUno, AccelStepper stepperDue, unsigned int Steps);
    ~Robot();
    void anima();
-   void vai_avanti();
+	void vai_avanti();
+   void vai_avanti(unsigned int endPoint);
    void avanti_tutta();
    void vai_indietro();
+   void vai_indietro(unsigned int endPoint);
    void vai_avanti_fisso();
    void girati_verso_destra();
    void girati_verso_sinistra();
+	void girati_verso_destra(unsigned int endPoint);
+   void girati_verso_sinistra(unsigned int endPoint);	
    void fine_lavoro();
+   void attendi();
    bool sensore_fine_corsa();
-   int guarda();
-   
+   int guarda(); 
 
 private:
    void reset();
