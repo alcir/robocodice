@@ -1,0 +1,29 @@
+##############################################
+# 
+##############################################
+
+##############################################
+# Datatypes (KEYWORD1)
+##############################################
+
+Robot		KEYWORD1
+
+##############################################
+# Methods and Functions (KEYWORD2)
+##############################################
+
+anima		KEYWORD2
+vai_avanti	KEYWORD2
+avanti_tutta	KEYWORD2
+vai_indietro	KEYWORD2
+vai_avanti_fisso KEYWORD2
+girati_verso_sinistra KEYWORD2
+girati_verso_destra KEYWORD2
+fine_lavoro	KEYWORD2
+attendi		KEYWORD2
+sensore_fine_corsa KEYWORD2
+guarda		KEYWORD2
+
+##############################################
+# Constants (LITERAL1)
+##############################################
